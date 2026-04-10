@@ -122,7 +122,7 @@ export default function Home() {
   const fetchLogs = async () => {
     try {
       setStatus("Loading logs...");
-      let url = "http://127.0.0.1:8000/logs?limit=100";
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/logs?limit=100`;
 
       if (level) {
         url += `&level=${encodeURIComponent(level)}`;
@@ -144,7 +144,7 @@ export default function Home() {
   const fetchAnomalies = async () => {
     try {
       setStatus("Loading anomalies...");
-      const res = await fetch("http://127.0.0.1:8000/logs/anomalies");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logs/anomalies`);
       const data = await res.json();
       setLogs(data);
       setStatus("");
@@ -162,7 +162,7 @@ export default function Home() {
     try {
       setStatus("Submitting log...");
 
-      const res = await fetch("http://127.0.0.1:8000/logs", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logs/bulk`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
