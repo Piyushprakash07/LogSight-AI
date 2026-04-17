@@ -198,7 +198,7 @@ export default function Home() {
       setStatus("Submitting bulk logs...");
       const parsedLogs = JSON.parse(bulkLogs);
 
-      const res = await fetch("http://127.0.0.1:8000/logs/bulk", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logs/bulk`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -253,7 +253,7 @@ export default function Home() {
         };
       });
 
-      const res = await fetch("http://127.0.0.1:8000/logs/bulk", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logs/bulk`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
