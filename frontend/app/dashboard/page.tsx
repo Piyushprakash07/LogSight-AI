@@ -51,6 +51,32 @@ export default function Home() {
     }
   }, [router]);
 
+  const fetchLogs = useCallback(async () => {
+    try {
+      setStatus("Loading logs...");
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/logs?limit=100`;
+
+      if (level) {
+        url += `&level=${encodeURIComponent(level)}`;
+      }
+
+      if (service) {
+        url += `&service=${encodeURIComponent(service)}`;
+      }
+
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await res.json();
+      setLogs(data);
+      setStatus("");
+    } catch {
+      setStatus("Failed to fetch logs");
+    }
+  }, [level, service]);
+
   useEffect(() => {
     if (!authorized) return;
 
@@ -119,31 +145,7 @@ export default function Home() {
       ? "Monitor anomalies closely and investigate recurring failures."
       : "System appears stable. Continue routine monitoring.";
 
-  const fetchLogs = useCallback(async () => {
-    try {
-      setStatus("Loading logs...");
-      let url = `${process.env.NEXT_PUBLIC_API_URL}/logs?limit=100`;
 
-      if (level) {
-        url += `&level=${encodeURIComponent(level)}`;
-      }
-
-      if (service) {
-        url += `&service=${encodeURIComponent(service)}`;
-      }
-
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      const data = await res.json();
-      setLogs(data);
-      setStatus("");
-    } catch {
-      setStatus("Failed to fetch logs");
-    }
-  }, [level, service]);
 
   const fetchAnomalies = async () => {
     try {
