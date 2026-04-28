@@ -8,8 +8,10 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
 const handleLogin = async () => {
+  setError("");
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
       method: "POST",
@@ -23,7 +25,7 @@ const handleLogin = async () => {
     });
 
     if (!res.ok) {
-      alert("Invalid login credentials");
+      setError("Invalid email or password");
       return;
     }
 
@@ -34,9 +36,9 @@ const handleLogin = async () => {
 
     // redirect to dashboard
     router.push("/dashboard");
-  } catch (error) {
-    console.error(error);
-    alert("Login failed");
+  } catch (err) {
+    console.error(err);
+    setError("Login failed. Please try again later.");
   }
 };
 
@@ -136,6 +138,12 @@ const handleLogin = async () => {
               color: "white",
             }}
           />
+
+          {error && (
+            <p style={{ color: "#ef4444", fontSize: "14px", marginBottom: "16px", textAlign: "center" }}>
+              {error}
+            </p>
+          )}
 
           <button
             onClick={handleLogin}

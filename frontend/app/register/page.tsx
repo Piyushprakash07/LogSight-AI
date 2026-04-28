@@ -8,8 +8,23 @@ export default function Register() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleRegister = async () => {
+    setError("");
+    setSuccess("");
+
+    if (!email || !password) {
+      setError("Please fill in all fields.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
     console.log("API:", process.env.NEXT_PUBLIC_API_URL);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
@@ -24,15 +39,17 @@ export default function Register() {
       });
 
       if (!res.ok) {
-        alert("Registration failed or user already exists");
+        setError("Registration failed or user already exists.");
         return;
       }
 
-      alert("Registration successful! Please login.");
-      router.push("/login");
-    } catch (error) {
-      console.error(error);
-      alert("Something went wrong during registration");
+      setSuccess("Registration successful! Redirecting to login...");
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong during registration.");
     }
   };
 
@@ -124,6 +141,34 @@ export default function Register() {
               color: "white",
             }}
           />
+
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            style={{
+              width: "100%",
+              marginBottom: "20px",
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #334155",
+              background: "#0f172a",
+              color: "white",
+            }}
+          />
+
+          {error && (
+            <p style={{ color: "#ef4444", fontSize: "14px", marginBottom: "16px", textAlign: "center" }}>
+              {error}
+            </p>
+          )}
+
+          {success && (
+            <p style={{ color: "#10b981", fontSize: "14px", marginBottom: "16px", textAlign: "center" }}>
+              {success}
+            </p>
+          )}
 
           <button
             onClick={handleRegister}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   BarChart,
   Bar,
@@ -61,7 +61,7 @@ export default function Home() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [authorized]);
+  }, [authorized, fetchLogs]);
 
   const displayedLogs = logs.filter((log) =>
     log.message.toLowerCase().includes(searchText.toLowerCase())
@@ -119,7 +119,7 @@ export default function Home() {
       ? "Monitor anomalies closely and investigate recurring failures."
       : "System appears stable. Continue routine monitoring.";
 
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     try {
       setStatus("Loading logs...");
       let url = `${process.env.NEXT_PUBLIC_API_URL}/logs?limit=100`;
@@ -132,19 +132,27 @@ export default function Home() {
         url += `&service=${encodeURIComponent(service)}`;
       }
 
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       const data = await res.json();
       setLogs(data);
       setStatus("");
     } catch {
       setStatus("Failed to fetch logs");
     }
-  };
+  }, [level, service]);
 
   const fetchAnomalies = async () => {
     try {
       setStatus("Loading anomalies...");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logs/anomalies`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logs/anomalies`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       const data = await res.json();
       setLogs(data);
       setStatus("");
@@ -166,6 +174,7 @@ export default function Home() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           level: newLevel,
@@ -202,6 +211,7 @@ export default function Home() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(parsedLogs),
       });
@@ -257,6 +267,7 @@ export default function Home() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(parsedLogs),
       });

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.models.log_model import Log
-from app.services.log_service import add_log, get_logs
+from app.models.log_service import add_log, get_logs
 
 router = APIRouter()
 
